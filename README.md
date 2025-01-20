@@ -51,4 +51,11 @@ Keep in mind:
 * We use Kafka as external queue, but any queue that can run as standalone app can be used. Keep in mind that internal queue inside java can't be used, because it pertains to java process, but we need something running as separate process.
 * Matching-engine is quite simple, it's just print orders, no logic inside. This is done on purpose to keep system as simple as possible. If you want to see how to write ME, take a look [exchange-core](https://github.com/dgaydukov/exchange-core).
 * The only thing that is implemented is transactionality:
-  * The main risk during switching between Primary and Secondary is that message is half-executed. Imagine order is being matched, but not settled. And if crash happened, in such case
+  * The main risk during switching between Primary and Secondary is that message is half-executed. Imagine order is being matched, but not settled. And if crash happened, in such case order should be discarded in executed from scratch in newly promoted instance.
+  * To catch such things we use concept called transactionality - only fully processed messages are marked as processed, otherwise it would be handled from scratch.
+
+There are 2 main scenarios:
+* Manual switching (zero-downtime deployment) - when we deliberately send message to switch from Primary to Secondary
+  * we can emulate this scenario by sending `switch` message
+* DR (disaster recovery) - in case our Primary died, we need to detect it and promote Secondary to be new Primary
+  * we can emulate this by manually killing Primary java app
