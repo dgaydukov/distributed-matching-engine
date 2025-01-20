@@ -1,4 +1,4 @@
-package com.exchange.zd;
+package com.exchange.zd.kafka;
 
 public class MessageHandler {
 }
