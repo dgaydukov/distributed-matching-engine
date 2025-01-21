@@ -1,4 +1,5 @@
 package com.exchange.zd.kafka;
 
-public class KafkaMessageHandler implements MessageHandler{
+public class KafkaMessageHandler implements MessageHandler {
+
 }
