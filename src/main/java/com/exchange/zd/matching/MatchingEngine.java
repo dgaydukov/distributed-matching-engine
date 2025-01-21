@@ -1,4 +1,5 @@
 package com.exchange.zd.matching;
 
-public class MatchingEngine {
+public interface MatchingEngine {
+    void start();
 }

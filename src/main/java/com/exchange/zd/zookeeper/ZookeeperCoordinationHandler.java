@@ -1,6 +1,6 @@
 package com.exchange.zd.zookeeper;
 
-public class ZookeeperHandler {
+public class ZookeeperCoordinationHandler implements CoordinationHandler{
     /**
      * This method would automatically detect if Primary instance is dead
      */
