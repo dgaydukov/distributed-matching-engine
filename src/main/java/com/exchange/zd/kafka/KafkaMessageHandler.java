@@ -20,7 +20,6 @@ import java.util.function.Consumer;
 public class KafkaMessageHandler implements MessageHandler {
     private final KafkaProducer<String, String> producer;
     private final KafkaConsumer<String, String> consumer;
-    private final String inputTopic;
     private final String outputTopic;
 
     public KafkaMessageHandler(String kafkaHost, String inputTopic, String outputTopic){
@@ -36,15 +35,14 @@ public class KafkaMessageHandler implements MessageHandler {
         consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, UUID.randomUUID().toString());
         consumer = new KafkaConsumer<>(consumerProperties);
-        consumer.subscribe(List.of(outputTopic));
+        consumer.subscribe(List.of(inputTopic));
 
-        this.inputTopic = inputTopic;
         this.outputTopic = outputTopic;
     }
 
     @Override
     public void send(String msg) {
-        ProducerRecord<String, String> record = new ProducerRecord<>(inputTopic, msg);
+        ProducerRecord<String, String> record = new ProducerRecord<>(outputTopic, msg);
         producer.send(record);
     }
 

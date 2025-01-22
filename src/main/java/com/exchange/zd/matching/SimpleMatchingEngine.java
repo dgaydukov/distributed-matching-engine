@@ -15,6 +15,34 @@ public class SimpleMatchingEngine implements MatchingEngine {
 
     @Override
     public void start() {
+        while (true){
+            messageHandler.consume(this::processOrder);
+        }
+    }
 
+    public void switchMe(){
+
+    }
+
+    public void processOrder(String order){
+        // start order processing
+        System.out.println("Processing order: "+order);
+
+        // imitate hard calculations
+        sleep(1);
+
+        // finish order processing
+        System.out.println("Processed order: "+order);
+
+        // send response
+        messageHandler.send("handled: " + order);
+    }
+
+    private void sleep(int sec){
+        try{
+            Thread.sleep(sec * 1000L);
+        } catch (InterruptedException ex){
+            throw new RuntimeException(ex);
+        }
     }
 }
