@@ -58,4 +58,10 @@ There are 2 main scenarios:
 * Manual switching (zero-downtime deployment) - when we deliberately send message to switch from Primary to Secondary
   * we can emulate this scenario by sending `switch` message
 * DR (disaster recovery) - in case our Primary died, we need to detect it and promote Secondary to be new Primary
-  * we can emulate this by manually killing Primary java app
+  * we can emulate this by manually killing Primary java app\
+
+To start the app:
+```shell
+# 
+```
+docker-compose exec kafka kafka-topics --create --topic matching-engine --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092
