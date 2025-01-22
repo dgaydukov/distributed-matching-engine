@@ -62,9 +62,10 @@ public class ZookeeperCoordinationHandler implements CoordinationHandler {
     }
 
     /**
-     * keep Primary connection alive
+     * keep Primary connection alive by requesting data about it
+     * By doing so, we sort of emulate ping method
      */
-    public void keepAlive(){
+    public void ping(){
         try {
             zk.getData(PRIMARY_NODE, null, null);
         } catch (KeeperException | InterruptedException ex) {

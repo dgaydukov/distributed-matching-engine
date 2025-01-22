@@ -23,7 +23,7 @@ public class SimpleMatchingEngine implements MatchingEngine {
                     coordinationHandler.promoteToPrimary();
                     // do some configuration changes as well
                 }
-                coordinationHandler.keepAlive();
+                coordinationHandler.ping();
                 messageHandler.consume(this::processOrder);
             }
         }).start();

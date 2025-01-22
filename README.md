@@ -74,3 +74,6 @@ docker-compose exec kafka kafka-topics --create --topic matching-engine --partit
 # checkout ui, you should see topic
 http://localhost:8082
 ```
+
+We use Zookeeper concept of `CreateMode.EPHEMERAL` to create ephemeral node. When our app is dead or if we don't send ping once in a while, zookeeper would detect it, and mark the node as non-existing. We have implemented special method to ping.
+So once our Primary would be declared dead, our Secondary instance would detect it, and promote itself as Primary.

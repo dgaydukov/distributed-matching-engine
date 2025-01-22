@@ -5,5 +5,5 @@ public interface CoordinationHandler {
 
     boolean promoteToPrimary();
 
-    void keepAlive();
+    void ping();
 }
