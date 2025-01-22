@@ -17,6 +17,11 @@ public class SimpleMatchingEngine implements MatchingEngine {
     public void start() {
         new Thread(()->{
             while (true){
+                // after each consume we can check if Primary is dead and if we are Secondary to switch to Primary
+                if (!coordinationHandler.detectPrimaryNode()){
+                    coordinationHandler.promoteToPrimary();
+                    // do some configuration changes as well
+                }
                 messageHandler.consume(this::processOrder);
             }
         }).start();

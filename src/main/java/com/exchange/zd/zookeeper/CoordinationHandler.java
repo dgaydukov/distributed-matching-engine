@@ -1,7 +1,7 @@
 package com.exchange.zd.zookeeper;
 
 public interface CoordinationHandler {
-    void detectPrimaryCrash();
+    boolean detectPrimaryNode();
 
-    void promoteToPrimary();
+    boolean promoteToPrimary();
 }
