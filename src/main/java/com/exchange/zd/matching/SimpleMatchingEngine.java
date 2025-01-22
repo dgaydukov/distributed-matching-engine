@@ -15,13 +15,11 @@ public class SimpleMatchingEngine implements MatchingEngine {
 
     @Override
     public void start() {
-        while (true){
-            messageHandler.consume(this::processOrder);
-        }
-    }
-
-    public void switchMe(){
-
+        new Thread(()->{
+            while (true){
+                messageHandler.consume(this::processOrder);
+            }
+        }).start();
     }
 
     public void processOrder(String order){

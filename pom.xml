@@ -20,5 +20,10 @@
             <artifactId>kafka-clients</artifactId>
             <version>3.8.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.zookeeper</groupId>
+            <artifactId>zookeeper</artifactId>
+            <version>3.9.2</version>
+        </dependency>
     </dependencies>
 </project>
