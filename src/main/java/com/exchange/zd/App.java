@@ -8,10 +8,16 @@ import com.exchange.zd.zookeeper.CoordinationHandler;
 import com.exchange.zd.zookeeper.ZookeeperCoordinationHandler;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler("localhost:2181");
         System.out.println(coordinationHandler.promoteToPrimary());
-        System.out.println(coordinationHandler.detectPrimaryNode());
+        for(int i = 1; i <= 10; i++){
+            System.out.println("Step => "+i);
+            if(!coordinationHandler.detectPrimaryNode()){
+                break;
+            }
+            Thread.sleep(100_000);
+        }
 
 
 //        MessageHandler messageHandler = new KafkaMessageHandler("localhost:9092", "me-input", "me-output");

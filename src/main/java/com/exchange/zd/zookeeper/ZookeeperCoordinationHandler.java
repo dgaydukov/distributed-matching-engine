@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 public class ZookeeperCoordinationHandler implements CoordinationHandler {
-    private static final String PRIMARY_NODE = "/Primary";
+    private static final String PRIMARY_NODE = "/Primary_1";
     private final ZooKeeper zk;
 
     public ZookeeperCoordinationHandler(String zookeeperHost) {
@@ -52,12 +52,23 @@ public class ZookeeperCoordinationHandler implements CoordinationHandler {
      */
     public boolean promoteToPrimary() {
         try {
-            zk.create(PRIMARY_NODE, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            zk.create(PRIMARY_NODE, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
         } catch (KeeperException.NodeExistsException ex) {
             return false;
         } catch (KeeperException | InterruptedException ex) {
             throw new RuntimeException(ex);
         }
         return true;
+    }
+
+    /**
+     * keep Primary connection alive
+     */
+    public void keepAlive(){
+        try {
+            zk.getData(PRIMARY_NODE, null, null);
+        } catch (KeeperException | InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

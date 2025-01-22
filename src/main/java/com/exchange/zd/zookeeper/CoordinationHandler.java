@@ -4,4 +4,6 @@ public interface CoordinationHandler {
     boolean detectPrimaryNode();
 
     boolean promoteToPrimary();
+
+    void keepAlive();
 }

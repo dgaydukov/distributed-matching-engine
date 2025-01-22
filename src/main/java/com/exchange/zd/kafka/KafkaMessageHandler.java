@@ -48,7 +48,7 @@ public class KafkaMessageHandler implements MessageHandler {
 
     @Override
     public void consume(Consumer<String> msgConsumer) {
-        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(10));
+        ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
         for (ConsumerRecord<String, String> record : records) {
             msgConsumer.accept(record.value());
         }
