@@ -32,15 +32,13 @@ public class ZookeeperCoordinationHandler implements CoordinationHandler {
     }
 
 
-
-
     /**
      * This method would automatically detect if Primary instance exists and running
      */
     public boolean detectPrimaryNode() {
         try {
             Stat stat = zk.exists(PRIMARY_NODE, true);
-            if (stat == null){
+            if (stat == null) {
                 return false;
             }
         } catch (KeeperException | InterruptedException ex) {
@@ -55,14 +53,11 @@ public class ZookeeperCoordinationHandler implements CoordinationHandler {
     public boolean promoteToPrimary() {
         try {
             zk.create(PRIMARY_NODE, new byte[]{}, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        } catch (KeeperException.NodeExistsException ex) {
+            return false;
         } catch (KeeperException | InterruptedException ex) {
-            if (ex instanceof KeeperException.NodeExistsException){
-                return false;
-            }
             throw new RuntimeException(ex);
         }
         return true;
-    }
-    public void createNode(String path, byte[] data) throws KeeperException, InterruptedException {
     }
 }
