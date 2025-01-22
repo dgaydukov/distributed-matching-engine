@@ -60,8 +60,17 @@ There are 2 main scenarios:
 * DR (disaster recovery) - in case our Primary died, we need to detect it and promote Secondary to be new Primary
   * we can emulate this by manually killing Primary java app\
 
+You can check out [docker-compose](docker-compose.yml), and see that we have 3 items there:
+* Zookeeper - coordination service, used to run Kafka and also used to coordinate switching between Primary and Secondary
+* Kafka - used as external queue
+* kafka-ui - nice UI tool to send/receive kafka messages. It's useful in out case cause you can create topic, send message, receive message using this UI tool, and you don't need to run any console commands for this. You can check it out by going to `http://localhost:8082`
+
 To start the app:
 ```shell
-# 
-```
+# start kafka, zookeeper and kafka-ui
+docker-compose -f docker-compose.yml up -d
+# create topic for testing (you can also use kafka-ui to manually add topic)
 docker-compose exec kafka kafka-topics --create --topic matching-engine --partitions 1 --replication-factor 1 --bootstrap-server kafka:9092
+# checkout ui, you should see topic
+http://localhost:8082
+```
