@@ -16,7 +16,7 @@ public class App {
     private static final String KAFKA_HOST = "127.0.0.1:9092";
     private static final String ZOOKEEPER_HOST = "127.0.0.1:2181";
     public static void main(String[] args) {
-        emulateLeaderSelection();
+        startMatchingEngine();
     }
 
     public static void startMatchingEngine(){
