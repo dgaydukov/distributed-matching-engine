@@ -84,3 +84,8 @@ Logger - we are using [logback.xml](src/main/resources/logback.xml) to configure
 09:24:50.884 [main-SendThread(localhost:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Got ping response for session id: 0x1000014c6700046 after 2ms.
 09:24:52.552 [main-SendThread(localhost:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Got ping response for session id: 0x1000014c6700046 after 3ms.
 ```
+
+Build and run the app:
+* we use 2 plugins in `pom.xml` file `maven-shade-plugin` to build fat jar, where all files are bundled inside so we can run the app with simply put `java -jar target/zd-1.0.jar`
+* Build docker with `docker build -t zookeeper-me .`
+* Run docker `docker run --network=host zookeeper-me` - we need to pass param `--network=host` so docker call our machine localhost, not container internal localhost

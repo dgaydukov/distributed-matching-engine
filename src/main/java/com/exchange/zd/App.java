@@ -13,21 +13,23 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class App {
+    private static final String KAFKA_HOST = "127.0.0.1:9092";
+    private static final String ZOOKEEPER_HOST = "127.0.0.1:2181";
     public static void main(String[] args) {
         emulateLeaderSelection();
     }
 
     public static void startMatchingEngine(){
         WaitStrategy waitStrategy = new SleepWaitStrategy();
-        MessageHandler messageHandler = new KafkaMessageHandler("localhost:9092", "me-input", "me-output");
-        CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler("localhost:2181");
+        MessageHandler messageHandler = new KafkaMessageHandler(KAFKA_HOST, "me-input", "me-output");
+        CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler(ZOOKEEPER_HOST);
         MatchingEngine me = new SimpleMatchingEngine(messageHandler, coordinationHandler, waitStrategy);
         me.start();
     }
 
     @SneakyThrows
     public static void emulateLeaderSelection()  {
-        CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler("localhost:2181");
+        CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler(ZOOKEEPER_HOST);
         System.out.println("promoteToPrimary => "+coordinationHandler.promoteToPrimary());
         for(int i = 1; i <= 10; i++){
             System.out.println("i = "+i+", detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
