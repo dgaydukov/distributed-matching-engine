@@ -77,3 +77,10 @@ http://localhost:8082
 
 We use Zookeeper concept of `CreateMode.EPHEMERAL` to create ephemeral node. When our app is dead or if we don't send ping once in a while, zookeeper would detect it, and mark the node as non-existing. We have implemented special method to ping.
 So once our Primary would be declared dead, our Secondary instance would detect it, and promote itself as Primary.
+
+Logger - we are using [logback.xml](src/main/resources/logback.xml) to configure our logger to show only `INFO` level, otherwise Zookeeper would print a lot of ping logs to check if instance is connected. Since we don't want to clutter console with such logs, we've added Logback configuration to manage logging level.
+```shell
+09:24:49.218 [main-SendThread(localhost:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Got ping response for session id: 0x1000014c6700046 after 3ms.
+09:24:50.884 [main-SendThread(localhost:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Got ping response for session id: 0x1000014c6700046 after 2ms.
+09:24:52.552 [main-SendThread(localhost:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Got ping response for session id: 0x1000014c6700046 after 3ms.
+```

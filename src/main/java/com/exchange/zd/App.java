@@ -12,9 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class App {
     public static void main(String[] args) {
-        System.out.println("start");
-        log.info("info");
-        log.debug("debug");
         emulateLeaderSelection();
 
 //        MessageHandler messageHandler = new KafkaMessageHandler("localhost:9092", "me-input", "me-output");
@@ -26,10 +23,10 @@ public class App {
     @SneakyThrows
     public static void emulateLeaderSelection()  {
         CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler("localhost:2181");
-        System.out.println(coordinationHandler.promoteToPrimary());
-
-        System.out.println("detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
-        Thread.sleep(10*60*1000);
-        System.out.println("detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
+        System.out.println("promoteToPrimary => "+coordinationHandler.promoteToPrimary());
+        for(int i = 1; i <= 10; i++){
+            System.out.println("i = "+i+", detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
+            Thread.sleep(3*60*1000);
+        }
     }
 }
