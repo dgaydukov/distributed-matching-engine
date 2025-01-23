@@ -24,11 +24,12 @@ public class SimpleMatchingEngine implements MatchingEngine {
             while (true){
                 if (isPrimary()){
                     // Run as Primary instance
+                    System.out.println("Fetch messages from queue...");
                     coordinationHandler.ping();
                     messageHandler.consume(this::processOrder);
                 } else if (!coordinationHandler.detectPrimaryNode()){
                     // If Secondary instance detected crash
-                    System.out.println("Detect Primary death. Promoting to Primary...");
+                    System.out.println("Promoting instance to Primary...");
                     if (coordinationHandler.promoteToPrimary()){
                         setAsPrimary();
                     }

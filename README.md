@@ -89,3 +89,7 @@ Build and run the app:
 * we use 2 plugins in `pom.xml` file `maven-shade-plugin` to build fat jar, where all files are bundled inside so we can run the app with simply put `java -jar target/zd-1.0.jar`
 * Build docker with `docker build -t zookeeper-me .`
 * Run docker `docker run --network=host zookeeper-me` - we need to pass param `--network=host` so docker call our machine localhost, not container internal localhost
+* Run above command from 2 tabs in cmd
+* You will see that one is running as Primary and second as Secondary
+* Kill Primary instance, and you will notice how Secondary would be promoted to Primary
+* If you re-run killed instance you will notice how it run as Secondary now
