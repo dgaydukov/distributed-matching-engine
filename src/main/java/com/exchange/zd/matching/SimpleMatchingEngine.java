@@ -2,17 +2,20 @@ package com.exchange.zd.matching;
 
 import com.exchange.zd.enums.InstanceState;
 import com.exchange.zd.kafka.MessageHandler;
+import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 import com.exchange.zd.zookeeper.CoordinationHandler;
 
 public class SimpleMatchingEngine implements MatchingEngine {
     private final MessageHandler messageHandler;
     private final CoordinationHandler coordinationHandler;
+    private final WaitStrategy waitStrategy;
     private InstanceState state = InstanceState.SECONDARY;
 
     public SimpleMatchingEngine(MessageHandler messageHandler,
-        CoordinationHandler coordinationHandler){
+        CoordinationHandler coordinationHandler, WaitStrategy waitStrategy){
         this.messageHandler = messageHandler;
         this.coordinationHandler = coordinationHandler;
+        this.waitStrategy = waitStrategy;
     }
 
     @Override
@@ -20,14 +23,18 @@ public class SimpleMatchingEngine implements MatchingEngine {
         new Thread(()->{
             while (true){
                 if (isPrimary()){
+                    // Run as Primary instance
                     coordinationHandler.ping();
                     messageHandler.consume(this::processOrder);
                 } else if (!coordinationHandler.detectPrimaryNode()){
-                    // after each consume we can check if Primary is dead and if we are Secondary to switch to Primary
+                    // If Secondary instance detected crash
                     System.out.println("Detect Primary death. Promoting to Primary...");
                     if (coordinationHandler.promoteToPrimary()){
                         setAsPrimary();
                     }
+                } else {
+                    // Run as Secondary instance and update state based on output queue
+                    waitStrategy.idle();
                 }
             }
         }).start();
