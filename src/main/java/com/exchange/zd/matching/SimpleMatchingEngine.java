@@ -34,7 +34,8 @@ public class SimpleMatchingEngine implements MatchingEngine {
                     }
                 } else {
                     // Run as Secondary instance and update state based on output queue
-                    waitStrategy.idle();
+                    System.out.println("Run Secondary Instance...");
+                    waitStrategy.idle(1000);
                 }
             }
         }).start();
@@ -48,24 +49,22 @@ public class SimpleMatchingEngine implements MatchingEngine {
     }
 
     public void processOrder(String order){
+        // If switch signal detected, exit Primary app
+        if("SWITCH".equals(order.toUpperCase())){
+            System.out.println("Exiting app...");
+            System.exit(0);
+        }
+
         // start order processing
         System.out.println("Processing order: "+order);
 
         // imitate hard calculations
-        sleep(1);
+        waitStrategy.idle(1000);
 
         // finish order processing
         System.out.println("Processed order: "+order);
 
         // send response
         messageHandler.send("handled: " + order);
-    }
-
-    private void sleep(int sec){
-        try{
-            Thread.sleep(sec * 1000L);
-        } catch (InterruptedException ex){
-            throw new RuntimeException(ex);
-        }
     }
 }
