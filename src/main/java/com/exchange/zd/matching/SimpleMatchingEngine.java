@@ -1,11 +1,13 @@
 package com.exchange.zd.matching;
 
+import com.exchange.zd.enums.InstanceState;
 import com.exchange.zd.kafka.MessageHandler;
 import com.exchange.zd.zookeeper.CoordinationHandler;
 
 public class SimpleMatchingEngine implements MatchingEngine {
     private final MessageHandler messageHandler;
     private final CoordinationHandler coordinationHandler;
+    private InstanceState state = InstanceState.SECONDARY;
 
     public SimpleMatchingEngine(MessageHandler messageHandler,
         CoordinationHandler coordinationHandler){
@@ -17,16 +19,25 @@ public class SimpleMatchingEngine implements MatchingEngine {
     public void start() {
         new Thread(()->{
             while (true){
-                // after each consume we can check if Primary is dead and if we are Secondary to switch to Primary
-                if (!coordinationHandler.detectPrimaryNode()){
+                if (isPrimary()){
+                    coordinationHandler.ping();
+                    messageHandler.consume(this::processOrder);
+                } else if (!coordinationHandler.detectPrimaryNode()){
+                    // after each consume we can check if Primary is dead and if we are Secondary to switch to Primary
                     System.out.println("Detect Primary death. Promoting to Primary...");
-                    coordinationHandler.promoteToPrimary();
-                    // do some configuration changes as well
+                    if (coordinationHandler.promoteToPrimary()){
+                        setAsPrimary();
+                    }
                 }
-                coordinationHandler.ping();
-                messageHandler.consume(this::processOrder);
             }
         }).start();
+    }
+
+    public boolean isPrimary(){
+        return state == InstanceState.PRIMARY;
+    }
+    public void setAsPrimary(){
+        state = InstanceState.PRIMARY;
     }
 
     public void processOrder(String order){

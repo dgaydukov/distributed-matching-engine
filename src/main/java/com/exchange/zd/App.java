@@ -26,7 +26,7 @@ public class App {
         System.out.println("promoteToPrimary => "+coordinationHandler.promoteToPrimary());
         for(int i = 1; i <= 10; i++){
             System.out.println("i = "+i+", detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
-            Thread.sleep(3*60*1000);
+            Thread.sleep(5*60*1000);
         }
     }
 }
