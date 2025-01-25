@@ -15,15 +15,18 @@ import lombok.extern.slf4j.Slf4j;
 public class App {
     private static final String KAFKA_HOST = "127.0.0.1:9092";
     private static final String ZOOKEEPER_HOST = "127.0.0.1:2181";
+    private static final String INPUT_TOPIC = "me-input";
+    private static final String OUTPUT_TOPIC = "me-output";
     public static void main(String[] args) {
         startMatchingEngine();
     }
 
     public static void startMatchingEngine(){
         WaitStrategy waitStrategy = new SleepWaitStrategy();
-        MessageHandler messageHandler = new KafkaMessageHandler(KAFKA_HOST, "me-input", "me-output");
+        MessageHandler messageHandler = new KafkaMessageHandler(KAFKA_HOST);
         CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler(ZOOKEEPER_HOST);
-        MatchingEngine me = new SimpleMatchingEngine(messageHandler, coordinationHandler, waitStrategy);
+        MatchingEngine me = new SimpleMatchingEngine(INPUT_TOPIC, OUTPUT_TOPIC,
+                messageHandler, coordinationHandler, waitStrategy);
         me.start();
     }
 

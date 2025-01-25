@@ -6,18 +6,18 @@ import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 import com.exchange.zd.zookeeper.CoordinationHandler;
 
 public class SimpleMatchingEngine implements MatchingEngine {
-    private final MessageHandler inputMessageHandler;
-    private final MessageHandler outputMessageHandler;
+    private final String inputTopic;
+    private final String outputTopic;
+    private final MessageHandler messageHandler;
     private final CoordinationHandler coordinationHandler;
     private final WaitStrategy waitStrategy;
     private InstanceState state = InstanceState.SECONDARY;
 
-    public SimpleMatchingEngine(MessageHandler inputMessageHandler,
-                                MessageHandler outputMessageHandler,
-                                CoordinationHandler coordinationHandler,
-                                WaitStrategy waitStrategy){
-        this.inputMessageHandler = inputMessageHandler;
-        this.outputMessageHandler = outputMessageHandler;
+    public SimpleMatchingEngine(String inputTopic, String outputTopic, MessageHandler messageHandler,
+                                CoordinationHandler coordinationHandler, WaitStrategy waitStrategy){
+        this.inputTopic = inputTopic;
+        this.outputTopic = outputTopic;
+        this.messageHandler = messageHandler;
         this.coordinationHandler = coordinationHandler;
         this.waitStrategy = waitStrategy;
     }
@@ -30,7 +30,7 @@ public class SimpleMatchingEngine implements MatchingEngine {
                     // Run as Primary instance
                     System.out.println("Fetch messages from queue...");
                     coordinationHandler.ping();
-                    messageHandler.consume(this::processOrder);
+                    messageHandler.consume(inputTopic, this::processOrder);
                 } else if (!coordinationHandler.detectPrimaryNode()){
                     // If Secondary instance detected crash
                     System.out.println("Promoting instance to Primary...");
@@ -70,6 +70,6 @@ public class SimpleMatchingEngine implements MatchingEngine {
         System.out.println("Processed order: "+order);
 
         // send response
-        messageHandler.send("handled: " + order);
+        messageHandler.send(outputTopic,"handled: " + order);
     }
 }
