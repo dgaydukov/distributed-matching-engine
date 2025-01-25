@@ -1,11 +1,17 @@
 package com.exchange.zd.matching.processor;
 
+import com.exchange.zd.kafka.MessageHandler;
 import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 
 public class PrimaryMessageProcessor implements MessageProcessor{
     private final WaitStrategy waitStrategy;
+    private final MessageHandler messageHandler;
+    private final String outputTopic;
 
-    public PrimaryMessageProcessor (WaitStrategy waitStrategy){
+    public PrimaryMessageProcessor (String outputTopic, WaitStrategy waitStrategy,
+                                    MessageHandler messageHandler){
+        this.outputTopic = outputTopic;
+        this.messageHandler = messageHandler;
         this.waitStrategy = waitStrategy;
     }
 

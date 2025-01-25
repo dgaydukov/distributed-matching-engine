@@ -13,7 +13,6 @@ public class SimpleMatchingEngine implements MatchingEngine {
     private final String outputTopic;
     private final MessageHandler messageHandler;
     private final CoordinationHandler coordinationHandler;
-    private final WaitStrategy waitStrategy;
     private InstanceState state = InstanceState.SECONDARY;
     private final MessageProcessor primaryMessageProcessor;
     private final MessageProcessor secondaryMessageProcessor;
@@ -24,9 +23,8 @@ public class SimpleMatchingEngine implements MatchingEngine {
         this.outputTopic = outputTopic;
         this.messageHandler = messageHandler;
         this.coordinationHandler = coordinationHandler;
-        this.waitStrategy = waitStrategy;
-        primaryMessageProcessor = new PrimaryMessageProcessor(waitStrategy);
-        secondaryMessageProcessor = new SecondaryMessageProcessor();
+        primaryMessageProcessor = new PrimaryMessageProcessor(outputTopic, waitStrategy, messageHandler);
+        secondaryMessageProcessor = new SecondaryMessageProcessor(waitStrategy);
     }
 
     @Override
