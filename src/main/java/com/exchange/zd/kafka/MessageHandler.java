@@ -3,7 +3,7 @@ package com.exchange.zd.kafka;
 import java.util.function.Consumer;
 
 public interface MessageHandler {
-    void send(String msg);
+    void send(String topic, String msg);
 
-    void consume(Consumer<String> consumer);
+    void consume(String topic, Consumer<String> consumer);
 }
