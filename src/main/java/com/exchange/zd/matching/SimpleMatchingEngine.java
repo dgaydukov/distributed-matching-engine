@@ -6,14 +6,18 @@ import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 import com.exchange.zd.zookeeper.CoordinationHandler;
 
 public class SimpleMatchingEngine implements MatchingEngine {
-    private final MessageHandler messageHandler;
+    private final MessageHandler inputMessageHandler;
+    private final MessageHandler outputMessageHandler;
     private final CoordinationHandler coordinationHandler;
     private final WaitStrategy waitStrategy;
     private InstanceState state = InstanceState.SECONDARY;
 
-    public SimpleMatchingEngine(MessageHandler messageHandler,
-        CoordinationHandler coordinationHandler, WaitStrategy waitStrategy){
-        this.messageHandler = messageHandler;
+    public SimpleMatchingEngine(MessageHandler inputMessageHandler,
+                                MessageHandler outputMessageHandler,
+                                CoordinationHandler coordinationHandler,
+                                WaitStrategy waitStrategy){
+        this.inputMessageHandler = inputMessageHandler;
+        this.outputMessageHandler = outputMessageHandler;
         this.coordinationHandler = coordinationHandler;
         this.waitStrategy = waitStrategy;
     }
@@ -51,7 +55,7 @@ public class SimpleMatchingEngine implements MatchingEngine {
 
     public void processOrder(String order){
         // If switch signal detected, exit Primary app
-        if("SWITCH".equals(order.toUpperCase())){
+        if("SWITCH".equalsIgnoreCase(order)){
             System.out.println("Exiting app...");
             System.exit(0);
         }
