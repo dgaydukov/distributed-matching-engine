@@ -2,6 +2,9 @@ package com.exchange.zd.matching;
 
 import com.exchange.zd.enums.InstanceState;
 import com.exchange.zd.kafka.MessageHandler;
+import com.exchange.zd.matching.processor.MessageProcessor;
+import com.exchange.zd.matching.processor.PrimaryMessageProcessor;
+import com.exchange.zd.matching.processor.SecondaryMessageProcessor;
 import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 import com.exchange.zd.zookeeper.CoordinationHandler;
 
@@ -12,6 +15,8 @@ public class SimpleMatchingEngine implements MatchingEngine {
     private final CoordinationHandler coordinationHandler;
     private final WaitStrategy waitStrategy;
     private InstanceState state = InstanceState.SECONDARY;
+    private final MessageProcessor primaryMessageProcessor;
+    private final MessageProcessor secondaryMessageProcessor;
 
     public SimpleMatchingEngine(String inputTopic, String outputTopic, MessageHandler messageHandler,
                                 CoordinationHandler coordinationHandler, WaitStrategy waitStrategy){
@@ -20,6 +25,8 @@ public class SimpleMatchingEngine implements MatchingEngine {
         this.messageHandler = messageHandler;
         this.coordinationHandler = coordinationHandler;
         this.waitStrategy = waitStrategy;
+        primaryMessageProcessor = new PrimaryMessageProcessor(waitStrategy);
+        secondaryMessageProcessor = new SecondaryMessageProcessor();
     }
 
     @Override
@@ -30,7 +37,7 @@ public class SimpleMatchingEngine implements MatchingEngine {
                     // Run as Primary instance
                     System.out.println("Fetch messages from queue...");
                     coordinationHandler.ping();
-                    messageHandler.consume(inputTopic, this::processOrder);
+                    messageHandler.consume(inputTopic, primaryMessageProcessor::processOrder);
                 } else if (!coordinationHandler.detectPrimaryNode()){
                     // If Secondary instance detected crash
                     System.out.println("Promoting instance to Primary...");
@@ -40,7 +47,7 @@ public class SimpleMatchingEngine implements MatchingEngine {
                 } else {
                     // Run as Secondary instance and update state based on output queue
                     System.out.println("Run Secondary Instance...");
-                    waitStrategy.idle(1000);
+                    messageHandler.consume(outputTopic, secondaryMessageProcessor::processOrder);
                 }
             }
         }).start();
@@ -51,25 +58,5 @@ public class SimpleMatchingEngine implements MatchingEngine {
     }
     public void setAsPrimary(){
         state = InstanceState.PRIMARY;
-    }
-
-    public void processOrder(String order){
-        // If switch signal detected, exit Primary app
-        if("SWITCH".equalsIgnoreCase(order)){
-            System.out.println("Exiting app...");
-            System.exit(0);
-        }
-
-        // start order processing
-        System.out.println("Processing order: "+order);
-
-        // imitate hard calculations
-        waitStrategy.idle(1000);
-
-        // finish order processing
-        System.out.println("Processed order: "+order);
-
-        // send response
-        messageHandler.send(outputTopic,"handled: " + order);
     }
 }
