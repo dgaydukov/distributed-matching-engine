@@ -1,7 +1,9 @@
 package com.exchange.zd.matching.processor;
 
 import com.exchange.zd.matching.waitstrategy.WaitStrategy;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SecondaryMessageProcessor implements MessageProcessor{
     private final WaitStrategy waitStrategy;
 
@@ -12,12 +14,12 @@ public class SecondaryMessageProcessor implements MessageProcessor{
     @Override
     public void processOrder(String order){
         // start order processing
-        System.out.println("Processing order: "+order);
+        log.info("Processing order={}", order);
 
         // imitate hard calculations
         waitStrategy.idle(1000);
 
         // finish order processing
-        System.out.println("Processed order: "+order);
+        log.info("Processed order:={}", order);
     }
 }

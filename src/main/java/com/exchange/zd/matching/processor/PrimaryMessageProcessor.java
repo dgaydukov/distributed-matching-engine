@@ -2,7 +2,9 @@ package com.exchange.zd.matching.processor;
 
 import com.exchange.zd.kafka.MessageHandler;
 import com.exchange.zd.matching.waitstrategy.WaitStrategy;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class PrimaryMessageProcessor implements MessageProcessor{
     private final WaitStrategy waitStrategy;
     private final MessageHandler messageHandler;
@@ -18,18 +20,18 @@ public class PrimaryMessageProcessor implements MessageProcessor{
     public void processOrder(String order){
         // If switch signal detected, exit Primary app
         if("SWITCH".equalsIgnoreCase(order)){
-            System.out.println("Exiting app...");
+            log.info("Exiting app...");
             System.exit(0);
         }
 
         // start order processing
-        System.out.println("Processing order: "+order);
+        log.info("Processing order={}", order);
 
         // imitate hard calculations
         waitStrategy.idle(1000);
 
         // finish order processing
-        System.out.println("Processed order: "+order);
+        log.info("Processed order={}", order);
 
         // send response
         messageHandler.send(outputTopic,"handled: " + order);

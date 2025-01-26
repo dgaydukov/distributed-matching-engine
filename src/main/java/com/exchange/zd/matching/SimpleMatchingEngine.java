@@ -7,7 +7,9 @@ import com.exchange.zd.matching.processor.PrimaryMessageProcessor;
 import com.exchange.zd.matching.processor.SecondaryMessageProcessor;
 import com.exchange.zd.matching.waitstrategy.WaitStrategy;
 import com.exchange.zd.zookeeper.CoordinationHandler;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SimpleMatchingEngine implements MatchingEngine {
     private final String inputTopic;
     private final String outputTopic;
@@ -33,18 +35,18 @@ public class SimpleMatchingEngine implements MatchingEngine {
             while (true){
                 if (isPrimary()){
                     // Run as Primary instance
-                    System.out.println("Fetch messages from queue...");
+                    log.info("Fetch messages from queue...");
                     coordinationHandler.ping();
                     messageHandler.consume(inputTopic, primaryMessageProcessor::processOrder);
                 } else if (!coordinationHandler.detectPrimaryNode()){
                     // If Secondary instance detected crash
-                    System.out.println("Promoting instance to Primary...");
+                    log.info("Promoting instance to Primary...");
                     if (coordinationHandler.promoteToPrimary()){
                         setAsPrimary();
                     }
                 } else {
                     // Run as Secondary instance and update state based on output queue
-                    System.out.println("Run Secondary Instance...");
+                    log.info("Run Secondary Instance...");
                     messageHandler.consume(outputTopic, secondaryMessageProcessor::processOrder);
                 }
             }

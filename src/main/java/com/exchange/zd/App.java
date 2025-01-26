@@ -33,9 +33,9 @@ public class App {
     @SneakyThrows
     public static void emulateLeaderSelection()  {
         CoordinationHandler coordinationHandler = new ZookeeperCoordinationHandler(ZOOKEEPER_HOST);
-        System.out.println("promoteToPrimary => "+coordinationHandler.promoteToPrimary());
+        log.info("promoteToPrimary={}", coordinationHandler.promoteToPrimary());
         for(int i = 1; i <= 10; i++){
-            System.out.println("i = "+i+", detectPrimaryNode => "+coordinationHandler.detectPrimaryNode());
+            log.info("i={}, detectPrimaryNode={}", i, coordinationHandler.detectPrimaryNode());
             Thread.sleep(10*60*1000);
         }
     }
