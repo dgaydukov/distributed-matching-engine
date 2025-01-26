@@ -46,7 +46,9 @@ Take a look at these 2 classes
 * [ZookeeperCoordinationHandler](src/main/java/com/exchange/zd/zookeeper/ZookeeperCoordinationHandler.java) - class to work with zookeeper to promote instance from Secondary state to Primary
 
 What is the problem with those 2? Right Dependency Injection. Because we added class init as `new` inside those 2, we can't properly test them. To fix it, you need to use DI across your app. The best way is to use some kind of framework like Spring, because if you try to manually manage all dependencies - first you will have a lot of clutter code and second at some point you may mess up and cause troubles.
-But here we don't have any type, and by writing code this way you create untestable code. Because in order to test you need to 
+But here we don't have any type, and by writing code this way you create untestable code. 
+If you try to test those 2 classes they would fail on init, because Kafka/Zookeeper is not running when you run tests. The best and easiest way is to move code creation beans of Kafka/Zookeeper into separate config file, and then inject those beans into above 2 classes.
+I won't change the code here, so keep it as bad example.
 
 ### Run instruction
 How to run this app. The installment can be run from Docker and consist of 4 parts:
