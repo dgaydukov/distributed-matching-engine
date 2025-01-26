@@ -33,24 +33,28 @@ public class SimpleMatchingEngine implements MatchingEngine {
     public void start() {
         new Thread(()->{
             while (true){
-                if (isPrimary()){
-                    // Run as Primary instance
-                    log.info("Fetch messages from queue...");
-                    coordinationHandler.ping();
-                    messageHandler.consume(inputTopic, primaryMessageProcessor::processOrder);
-                } else if (!coordinationHandler.detectPrimaryNode()){
-                    // If Secondary instance detected crash
-                    log.info("Promoting instance to Primary...");
-                    if (coordinationHandler.promoteToPrimary()){
-                        setAsPrimary();
-                    }
-                } else {
-                    // Run as Secondary instance and update state based on output queue
-                    log.info("Run Secondary Instance...");
-                    messageHandler.consume(outputTopic, secondaryMessageProcessor::processOrder);
-                }
+                process();
             }
         }).start();
+    }
+
+    public void process(){
+        if (isPrimary()){
+            // Run as Primary instance
+            log.info("Fetch messages from queue...");
+            coordinationHandler.ping();
+            messageHandler.consume(inputTopic, primaryMessageProcessor::processOrder);
+        } else if (!coordinationHandler.detectPrimaryNode()){
+            // If Secondary instance detected crash
+            log.info("Promoting instance to Primary...");
+            if (coordinationHandler.promoteToPrimary()){
+                setAsPrimary();
+            }
+        } else {
+            // Run as Secondary instance and update state based on output queue
+            log.info("Run Secondary Instance...");
+            messageHandler.consume(outputTopic, secondaryMessageProcessor::processOrder);
+        }
     }
 
     public boolean isPrimary(){

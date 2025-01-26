@@ -12,15 +12,36 @@ public class SimpleMatchingEngineTest {
     private final static String OUTPUT_TOPIC = "output";
 
     @Test
-    public void initTest(){
+    public void processTest(){
         MessageHandler messageHandler = Mockito.mock(MessageHandler.class);
         CoordinationHandler coordinationHandler = Mockito.mock(CoordinationHandler.class);
         WaitStrategy waitStrategy = Mockito.mock(WaitStrategy.class);
         SimpleMatchingEngine me = new SimpleMatchingEngine(INPUT_TOPIC, OUTPUT_TOPIC,
                 messageHandler, coordinationHandler, waitStrategy);
 
+        // test primary/secondary
         Assertions.assertFalse(me.isPrimary(), "Matching-engine should be in Secondary state");
         me.setAsPrimary();
+        Assertions.assertTrue(me.isPrimary(), "Matching-engine should be in Primary state");
+
+        // test run as primary
+        me.process();
+        Mockito.verify(coordinationHandler, Mockito.times(1)).ping();
+        Mockito.verify(messageHandler, Mockito.times(1)).consume(Mockito.eq(INPUT_TOPIC), Mockito.any());
+
+        // test run as secondary
+        me = new SimpleMatchingEngine(INPUT_TOPIC, OUTPUT_TOPIC,
+                messageHandler, coordinationHandler, waitStrategy);
+        Mockito.when(coordinationHandler.detectPrimaryNode()).thenReturn(true);
+        me.process();
+        Mockito.verify(messageHandler, Mockito.times(1)).consume(Mockito.eq(OUTPUT_TOPIC), Mockito.any());
+
+        // test promotion
+        Mockito.when(coordinationHandler.detectPrimaryNode()).thenReturn(false);
+        Mockito.when(coordinationHandler.promoteToPrimary()).thenReturn(true);
+        Assertions.assertFalse(me.isPrimary(), "Matching-engine should be in Secondary state");
+        me.process();
+        Mockito.verify(coordinationHandler, Mockito.times(1)).promoteToPrimary();
         Assertions.assertTrue(me.isPrimary(), "Matching-engine should be in Primary state");
     }
 }
