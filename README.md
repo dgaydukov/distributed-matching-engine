@@ -37,7 +37,16 @@ When we want to update:
 * It's always better to update the code of former Primary and start it as Secondary
 
 ### Test coverage
-Test coverage is the most important thing when we are writing software, so we have created following test cases:
+Across all my projects I always write about importance of test coverage.
+Why it's so important. The answer is pretty simple, if you write test cases first and then write code, you will write better code.
+But if you do the other way around, I ensure you with 99% you will have to refactor your code in some way.
+In all my projects I always write high-quality code, but here I'll demonstrate what is bad code is.
+Take a look at these 2 classes
+* [KafkaMessageHandler](src/main/java/com/exchange/zd/kafka/KafkaMessageHandler.java) - class to work with kafka to send/receive messages
+* [ZookeeperCoordinationHandler](src/main/java/com/exchange/zd/zookeeper/ZookeeperCoordinationHandler.java) - class to work with zookeeper to promote instance from Secondary state to Primary
+
+What is the problem with those 2? Right Dependency Injection. Because we added class init as `new` inside those 2, we can't properly test them. To fix it, you need to use DI across your app. The best way is to use some kind of framework like Spring, because if you try to manually manage all dependencies - first you will have a lot of clutter code and second at some point you may mess up and cause troubles.
+But here we don't have any type, and by writing code this way you create untestable code. Because in order to test you need to 
 
 ### Run instruction
 How to run this app. The installment can be run from Docker and consist of 4 parts:

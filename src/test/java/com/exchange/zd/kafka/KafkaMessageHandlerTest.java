@@ -1,11 +1,8 @@
 package com.exchange.zd.kafka;
 
-
-import org.junit.jupiter.api.Test;
-
+/**
+ * KafkaMessageHandler is untestable
+ */
 public class KafkaMessageHandlerTest {
-    @Test
-    public void sendTest(){
-        MessageHandler messageHandler = new KafkaMessageHandler("");
-    }
+
 }
