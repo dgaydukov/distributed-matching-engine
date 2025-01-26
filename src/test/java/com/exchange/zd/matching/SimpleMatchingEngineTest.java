@@ -24,19 +24,20 @@ public class SimpleMatchingEngineTest {
         me.setAsPrimary();
         Assertions.assertTrue(me.isPrimary(), "Matching-engine should be in Primary state");
 
-        // test run as primary
+        // run process method single time for Primary instance
         me.process();
         Mockito.verify(coordinationHandler, Mockito.times(1)).ping();
         Mockito.verify(messageHandler, Mockito.times(1)).consume(Mockito.eq(INPUT_TOPIC), Mockito.any());
 
-        // test run as secondary
+        // run process method single time for Secondary instance
+        // since our state is Primary we re-create instance to be in Secondary mode by default
         me = new SimpleMatchingEngine(INPUT_TOPIC, OUTPUT_TOPIC,
                 messageHandler, coordinationHandler, waitStrategy);
         Mockito.when(coordinationHandler.detectPrimaryNode()).thenReturn(true);
         me.process();
         Mockito.verify(messageHandler, Mockito.times(1)).consume(Mockito.eq(OUTPUT_TOPIC), Mockito.any());
 
-        // test promotion
+        // test promotion from Secondary to Primary
         Mockito.when(coordinationHandler.detectPrimaryNode()).thenReturn(false);
         Mockito.when(coordinationHandler.promoteToPrimary()).thenReturn(true);
         Assertions.assertFalse(me.isPrimary(), "Matching-engine should be in Secondary state");

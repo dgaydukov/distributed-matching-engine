@@ -50,6 +50,9 @@ But here we don't have any type, and by writing code this way you create untesta
 If you try to test those 2 classes they would fail on init, because Kafka/Zookeeper is not running when you run tests. The best and easiest way is to move code creation beans of Kafka/Zookeeper into separate config file, and then inject those beans into above 2 classes.
 I won't change the code here, so keep it as bad example.
 
+On the other hand the class [SimpleMatchingEngine](src/main/java/com/exchange/zd/matching/SimpleMatchingEngine.java) is written a little better. In order to instantiate you have to pass other classes as params. By this you can mock them and test logic end-to-end.
+Take a look at the [SimpleMatchingEngineTest](src/test/java/com/exchange/zd/matching/SimpleMatchingEngineTest.java) that test all 3 scenarios when you run matching-engine in primary mode, secondary mode or promoting Secondary to Primary.
+
 ### Run instruction
 How to run this app. The installment can be run from Docker and consist of 4 parts:
 * Zookeeper - to switch between Primary and Secondary instance
